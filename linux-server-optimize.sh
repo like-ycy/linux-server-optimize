@@ -127,6 +127,9 @@ StopSelinux(){
 			sed -i 's/SELINUX=permissive/SELINUX=disabled/g' /etc/selinux/config
 		fi
 	fi
+	green "===================================="
+	green "========  Selinux关闭成功  =========="
+	green "===================================="
 }
 
 OpenFiles(){
@@ -139,28 +142,43 @@ cat <<EOF >> /etc/security/limits.conf
 * hard nproc  65535
 EOF
 fi
-		green "===================================="
-		green "打开文件最大数和进程最大数目修改完毕"
-		green "===================================="
+green "===================================="
+green "打开文件最大数和进程最大数目修改完毕"
+green "===================================="
+}
+
+TimeZone(){
+	timedatectl  set-timezone Asia/Shanghai
+	timedatectl set-ntp true
+	green "===================================="
+	green "==========  时区修改完毕  ==========="
+	green "===================================="
+}
+
+Repo(){
+	if [[ "$os" == "ubuntu" && "$os_version" -ge 1804 ]]; then
+		""
+	fi
+	if [[ "$os" == "centos" && "$os_version" -ge 7 ]]; then
+		""
+	fi
+}
+
+InstallTools(){
+	if [[ "$os" == "ubuntu" && "$os_version" -ge 1804 ]]; then
+		""
+	fi
+	if [[ "$os" == "centos" && "$os_version" -ge 7 ]]; then
+		""
+	fi
 }
 
 
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
+# 最后重启机器
+# reboot
 
 
 
