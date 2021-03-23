@@ -6,11 +6,7 @@
 red='\e[91m'
 green='\e[92m'
 yellow='\e[93m'
-
-# 紫色
 magenta='\e[95m'
-
-# 青色
 cyan='\e[96m'
 none='\e[0m'
 _red() { echo -e ${red}$*${none}; }
