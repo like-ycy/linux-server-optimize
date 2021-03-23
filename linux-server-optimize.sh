@@ -97,36 +97,36 @@ fi
 # 最后重启机器
 
 StopFirewalld(){
-if [[ "$os" == "ubuntu" && "$os_version" -ge 1804 ]]; then
-	systemctl stop firewalld
-	systemctl disable firewalld
-fi
+	if [[ "$os" == "ubuntu" && "$os_version" -ge 1804 ]]; then
+		systemctl stop firewalld
+		systemctl disable firewalld
+	fi
 
-# if [[ "$os" == "debian" && "$os_version" -ge 9 ]]; then
-# 	systemctl stop firewalld
-# 	systemctl disable firewalld
-# fi
+	# if [[ "$os" == "debian" && "$os_version" -ge 9 ]]; then
+	# 	systemctl stop firewalld
+	# 	systemctl disable firewalld
+	# fi
 
-if [[ "$os" == "centos" && "$os_version" -ge 7 ]]; then
-	systemctl stop firewalld
-	systemctl disable firewalld
-fi
+	if [[ "$os" == "centos" && "$os_version" -ge 7 ]]; then
+		systemctl stop firewalld
+		systemctl disable firewalld
+	fi
 }
 
 StopSelinux(){
-if [[ "$os" == "ubuntu" && "$os_version" -ge 1804 ]]; then
-	""
-fi
-if [[ "$os" == "centos" && "$os_version" -ge 7 ]]; then
-	CHECK=$(grep SELINUX= /etc/selinux/config | grep -v "#")
-	if [ "$CHECK" == "SELINUX=enforcing" ]; then
-		sed -i 's/SELINUX=enforcing/SELINUX=disabled/g' /etc/selinux/config
+	if [[ "$os" == "ubuntu" && "$os_version" -ge 1804 ]]; then
+		""
 	fi
+	if [[ "$os" == "centos" && "$os_version" -ge 7 ]]; then
+		CHECK=$(grep SELINUX= /etc/selinux/config | grep -v "#")
+		if [ "$CHECK" == "SELINUX=enforcing" ]; then
+			sed -i 's/SELINUX=enforcing/SELINUX=disabled/g' /etc/selinux/config
+		fi
 
-	if [ "$CHECK" == "SELINUX=permissive" ]; then
-		sed -i 's/SELINUX=permissive/SELINUX=disabled/g' /etc/selinux/config
+		if [ "$CHECK" == "SELINUX=permissive" ]; then
+			sed -i 's/SELINUX=permissive/SELINUX=disabled/g' /etc/selinux/config
+		fi
 	fi
-fi
 }
 
 OpenFiles(){
@@ -139,12 +139,10 @@ cat <<EOF >> /etc/security/limits.conf
 * hard nproc  65535
 EOF
 fi
-green "===================================="
-green "打开文件最大数和进程最大数目修改完毕"
-green "===================================="
+		green "===================================="
+		green "打开文件最大数和进程最大数目修改完毕"
+		green "===================================="
 }
-
-
 
 
 
