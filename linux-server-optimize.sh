@@ -98,8 +98,8 @@ fi
 
 StopFirewalld(){
 	if [[ "$os" == "ubuntu" && "$os_version" -ge 1804 ]]; then
-		systemctl stop firewalld
-		systemctl disable firewalld
+		systemctl stop ufw
+		systemctl disable ufw
 	fi
 
 	# if [[ "$os" == "debian" && "$os_version" -ge 9 ]]; then
@@ -174,38 +174,80 @@ InstallTools(){
 }
 
 
+Kernel(){
+	""
+}
 
+restart(){
 
+}
+
+start_menu(){
+    clear
+    green " ===================================="
+    green "       Linux系统优化脚本              "
+    green " ===================================="
+    echo
+    green " 1. 关闭防火墙和Selinux"
+    green " 2. 修改打开文件最大数"
+    green " 3. 修改时区"
+    green " 4. 修改镜像源"
+	green " 5. 安装工具"
+	green " 6. 内核优化"
+	green " 7. 小孩子才做选择，我全都要!"
+    blue " 0. 退出脚本"
+    echo
+    read -p "请输入数字:" num
+    case "$num" in
+    1)
+    StopFirewalld
+	StopSelinux
+    ;;
+    2)
+    OpenFiles
+    ;;
+    3)
+    TimeZone
+    ;;
+    4)
+    Repo
+    ;;
+	5)
+	InstallTools
+	;;
+	6)
+	Kernel
+	;;
+	7)
+	StopFirewalld
+	StopSelinux
+	OpenFiles
+	TimeZone
+	Repo
+	InstallTools
+	Kernel
+    0)
+    exit 1
+    ;;
+    *)
+    clear
+    red "请输入正确数字"
+    sleep 1s
+    start_menu
+    ;;
+    esac
+}
+
+start_menu
 
 # 最后重启机器
-# reboot
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+red " ===================================="
+red "       都优化完了，要重启机器吗        "
+red " ===================================="
+echo
+read -p "是否现在重启 ?请输入 [Y/n] :" yn
+[ -z "${yn}" ] && yn="y"
+if [[ $yn == [Yy] ]]; then
+	echo -e "即将重启..."
+	reboot
+fi
