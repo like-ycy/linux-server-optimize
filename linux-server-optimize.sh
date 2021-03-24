@@ -78,20 +78,6 @@ if [[ "$os" == "centos" && "$os_version" -lt 7 ]]; then
 	exit
 fi
 
-# 判断系统发行版本，命令的不同及文件路径的不同
-# 关闭防火墙
-# 关闭selinux
-# 升级内核
-# 修改主机名
-# 修改文件打开数
-# 修改内核参数
-# 修改时区
-# 修改yum源
-# 安装必要工具lrzsz wget curl vim net-tools bind-utils epel-release
-# k8s的要关闭swap分区
-# 添加hosts文件
-# 最后重启机器
-
 StopFirewalld(){
 	if [[ "$os" == "ubuntu" && "$os_version" -ge 1804 ]]; then
 		systemctl stop ufw
@@ -152,11 +138,24 @@ TimeZone(){
 }
 
 Repo(){
-	if [[ "$os" == "ubuntu" && "$os_version" -ge 1804 ]]; then
-		""
+	if [[ "$os" == "ubuntu" && "$os_version" == 1804 ]]; then
+		cp /etc/apt/sources.list /etc/apt/sources.list.bak
+	else
+		cp /etc/apt/sources.list /etc/apt/sources.list.bak
 	fi
-	if [[ "$os" == "centos" && "$os_version" -ge 7 ]]; then
-		""
+	if [[ "$os" == "centos" && "$os_version" == 7 ]]; then
+		yum install wget -y
+		mv /etc/yum.repos.d/CentOS-Base.repo /etc/yum.repos.d/CentOS-Base.repo.bak
+		wget -O /etc/yum.repos.d/CentOS-Base.repo http://mirrors.aliyun.com/repo/Centos-7.repo
+		yum clean all
+		yum makecache
+	else
+		dnf install wget -y
+		cd /etc/yum.repos.d/
+		for name in `ls *.repo`; do mv $name ${name%}.bak; done
+		wget -O /etc/yum.repos.d/CentOS-Base.repo http://mirrors.aliyun.com/repo/Centos-8.repo
+		yum clean all
+		yum makecache
 	fi
 }
 
@@ -172,10 +171,6 @@ InstallTools(){
 
 Kernel(){
 	""
-}
-
-restart(){
-
 }
 
 start_menu(){
