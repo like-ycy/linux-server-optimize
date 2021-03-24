@@ -93,6 +93,9 @@ StopFirewalld(){
 		systemctl stop firewalld
 		systemctl disable firewalld
 	fi
+	green "===================================="
+	blue "==========  防火墙关闭成功  =========="
+	green "===================================="
 }
 
 StopSelinux(){
@@ -110,7 +113,7 @@ StopSelinux(){
 		fi
 	fi
 	green "===================================="
-	green "========  Selinux关闭成功  =========="
+	blue "========  Selinux关闭成功  =========="
 	green "===================================="
 }
 
@@ -125,7 +128,7 @@ cat <<EOF >> /etc/security/limits.conf
 EOF
 fi
 green "===================================="
-green "打开文件最大数和进程最大数目修改完毕"
+blue "打开文件最大数和进程最大数目修改完毕"
 green "===================================="
 }
 
@@ -157,20 +160,53 @@ Repo(){
 		yum clean all
 		yum makecache
 	fi
+	green "===================================="
+	blue "==========  镜像源修改完毕  =========="
+	green "===================================="
 }
 
 InstallTools(){
 	if [[ "$os" == "ubuntu" && "$os_version" -ge 1804 ]]; then
-		""
+
 	fi
 	if [[ "$os" == "centos" && "$os_version" -ge 7 ]]; then
-		""
+		yum install -y lrzsz wget curl vim net-tools bind-utils epel-release
 	fi
 }
 
 
 Kernel(){
-	""
+cp /etc/sysctl.conf /etc/sysctl.conf.`date +"%Y-%m-%d_%H-%M-%S"`
+cat <<EOF >>/etc/sysctl.conf
+net.ipv4.ip_forward = 1
+net.ipv4.conf.default.rp_filter = 1
+net.ipv4.conf.default.accept_source_route = 0
+net.ipv4.tcp_syncookies = 1
+kernel.shmmax=15461882265
+kernel.shmall=3774873
+kernel.msgmax=65535
+kernel.msgmnb=65535
+net.ipv4.tcp_max_tw_buckets = 6000
+net.ipv4.tcp_sack = 1
+net.ipv4.tcp_rmem = 4096 87380 4194304
+net.ipv4.tcp_wmem = 4096 16384 4194304
+net.core.wmem_default = 8388608
+net.core.rmem_default = 8388608
+net.core.rmem_max = 16777216
+net.core.wmem_max = 16777216
+net.core.netdev_max_backlog = 262144
+net.ipv4.tcp_max_orphans = 3276800
+net.ipv4.tcp_max_syn_backlog = 262144
+net.ipv4.tcp_timestamps = 0
+net.ipv4.tcp_synack_retries = 1
+net.ipv4.tcp_syn_retries = 1
+net.ipv4.tcp_tw_reuse = 1
+net.ipv4.tcp_mem = 94500000 915000000 927000000
+net.ipv4.tcp_fin_timeout = 30
+net.ipv4.ip_local_port_range = 1024 65000
+fs.file-max = 131072
+vm.max_map_count=262144
+EOF
 }
 
 start_menu(){
