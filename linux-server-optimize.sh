@@ -177,10 +177,10 @@ Repo(){
 
 InstallTools(){
 	if [[ "$os" == "ubuntu" && "$os_version" -ge 1804 ]]; then
-		apt install vim lrzsz curl wget net-tools bind-utils epel-release
+		apt install vim lrzsz curl wget net-tools bind-utils epel-release zip unzip git
 	fi
 	if [[ "$os" == "centos" && "$os_version" -ge 7 ]]; then
-		yum install -y lrzsz wget curl vim net-tools bind-utils epel-release
+		yum install -y lrzsz wget curl vim net-tools bind-utils epel-release zip unzip git
 	fi
 }
 
