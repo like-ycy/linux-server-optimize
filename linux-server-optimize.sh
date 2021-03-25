@@ -182,6 +182,9 @@ InstallTools(){
 	if [[ "$os" == "centos" && "$os_version" -ge 7 ]]; then
 		yum install -y lrzsz wget curl vim net-tools bind-utils epel-release zip unzip git
 	fi
+	green "===================================="
+	blue "========== 常用工具安装完毕 =========="
+	green "===================================="
 }
 
 
