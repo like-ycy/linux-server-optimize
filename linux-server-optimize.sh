@@ -2,6 +2,12 @@
 #
 # https://github.com/like-ycy/linux-server-optimize
 
+
+# 问题：
+# 1、系统版本判断中，至判断了ubuntu1804，还有1810，20.04,20.10其他版本，会被认为20版本的
+# 2、centos也需要排查这一问题
+# 3、影响镜像源和内核参数
+
 # Colors
 red='\e[91m'
 green='\e[92m'
@@ -142,9 +148,13 @@ TimeZone(){
 
 Repo(){
 	if [[ "$os" == "ubuntu" && "$os_version" == 1804 ]]; then
-		cp /etc/apt/sources.list /etc/apt/sources.list.bak
+		mv /etc/apt/sources.list /etc/apt/sources.list.bak
+	    wget -O /etc/apt/source.list https://github.com/like-ycy/linux-server-optimize/raw/main/sources1804.list
+		apt-get update
 	else
-		cp /etc/apt/sources.list /etc/apt/sources.list.bak
+		mv /etc/apt/sources.list /etc/apt/sources.list.bak
+		apt-get update
+
 	fi
 	if [[ "$os" == "centos" && "$os_version" == 7 ]]; then
 		yum install wget -y
@@ -167,7 +177,7 @@ Repo(){
 
 InstallTools(){
 	if [[ "$os" == "ubuntu" && "$os_version" -ge 1804 ]]; then
-
+		apt install vim lrzsz curl wget net-tools bind-utils epel-release
 	fi
 	if [[ "$os" == "centos" && "$os_version" -ge 7 ]]; then
 		yum install -y lrzsz wget curl vim net-tools bind-utils epel-release
