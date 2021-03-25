@@ -84,6 +84,7 @@ if [[ "$os" == "centos" && "$os_version" -lt 7 ]]; then
 	exit
 fi
 
+# 关闭防火墙
 StopFirewalld(){
 	if [[ "$os" == "ubuntu" && "$os_version" -ge 1804 ]]; then
 		systemctl stop ufw
@@ -104,6 +105,7 @@ StopFirewalld(){
 	green "===================================="
 }
 
+# 关闭selinux
 StopSelinux(){
 	if [[ "$os" == "ubuntu" && "$os_version" -ge 1804 ]]; then
 		""
@@ -123,6 +125,7 @@ StopSelinux(){
 	green "===================================="
 }
 
+# 设置打开文件最大数
 OpenFiles(){
 cp /etc/security/limits.conf /etc/security/limits.conf.`date +"%Y-%m-%d_%H-%M-%S"`
 if [[ $? -ne 1 ]] ; then
@@ -138,6 +141,7 @@ blue "打开文件最大数和进程最大数目修改完毕"
 green "===================================="
 }
 
+# 设置时区
 TimeZone(){
 	timedatectl  set-timezone Asia/Shanghai
 	timedatectl set-ntp true
@@ -146,6 +150,7 @@ TimeZone(){
 	green "===================================="
 }
 
+# 设置镜像源
 Repo(){
 	if [[ "$os" == "ubuntu" && "$os_version" == 1804 ]]; then
 		mv /etc/apt/sources.list /etc/apt/sources.list.bak
@@ -175,6 +180,7 @@ Repo(){
 	green "===================================="
 }
 
+# 安装常用工具
 InstallTools(){
 	if [[ "$os" == "ubuntu" && "$os_version" -ge 1804 ]]; then
 		apt install vim lrzsz curl wget net-tools bind-utils epel-release zip unzip git
@@ -187,7 +193,7 @@ InstallTools(){
 	green "===================================="
 }
 
-
+# 内核优化
 Kernel(){
 	cp /etc/sysctl.conf /etc/sysctl.conf.`date +"%Y-%m-%d_%H-%M-%S"`
 	wget -O /etc/sysctl.conf https://github.com/like-ycy/linux-server-optimize/raw/main/sysctl.conf
