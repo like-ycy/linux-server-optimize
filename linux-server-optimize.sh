@@ -137,7 +137,7 @@ green "===================================="
 
 # 设置时区
 TimeZone(){
-	timedatectl  set-timezone Asia/Shanghai
+	timedatectl set-timezone Asia/Shanghai
 	timedatectl set-ntp true
 	green "===================================="
 	green "==========  时区修改完毕  ==========="
