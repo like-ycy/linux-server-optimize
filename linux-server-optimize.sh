@@ -58,18 +58,25 @@ if grep -qs "ubuntu" /etc/os-release; then
 	os="ubuntu"
 	os_version=$(grep 'VERSION_ID' /etc/os-release | cut -d '"' -f 2 | tr -d '.')
 	group_name="nogroup"
-# elif [[ -e /etc/debian_version ]]; then
-# 	os="debian"
-# 	os_version=$(grep -oE '[0-9]+' /etc/debian_version | head -1)
-# 	group_name="nogroup"
+
 elif [[ -e /etc/centos-release ]]; then
 	os="centos"
 	os_version=$(grep -oE '[0-9]+' /etc/centos-release | head -1)
 	group_name="nobody"
-# elif [[ -e /etc/fedora-release ]]; then
-# 	os="fedora"
-# 	os_version=$(grep -oE '[0-9]+' /etc/fedora-release | head -1)
-# 	group_name="nobody"
+
+# This is annotation
+:<<!
+elif [[ -e /etc/debian_version ]]; then
+ 	os="debian"
+ 	os_version=$(grep -oE '[0-9]+' /etc/debian_version | head -1)
+ 	group_name="nogroup"
+
+elif [[ -e /etc/fedora-release ]]; then
+	os="fedora"
+	os_version=$(grep -oE '[0-9]+' /etc/fedora-release | head -1)
+	group_name="nobody"
+!
+
 else
 	echo -e "
 	哈哈……这个 ${red}辣鸡脚本${none} 不支持你的系统。 ${yellow}(-_-) ${none}
@@ -83,10 +90,13 @@ if [[ "$os" == "ubuntu" && "$os_version" -lt 1804 ]]; then
 	exit
 fi
 
-# if [[ "$os" == "debian" && "$os_version" -lt 9 ]]; then
-# 	echo -e "此脚本需要 ${green}Debian 9${none} 或更高版本。\n"
-# 	exit
-# fi
+# This is annotation
+:<<!
+if [[ "$os" == "debian" && "$os_version" -lt 9 ]]; then
+	echo -e "此脚本需要 ${green}Debian 9${none} 或更高版本。\n"
+	exit
+fi
+!
 
 if [[ "$os" == "centos" && "$os_version" -lt 7 ]]; then
 	echo -e "此脚本需要 ${green}Centos 7${none} 或更高版本。\n"
