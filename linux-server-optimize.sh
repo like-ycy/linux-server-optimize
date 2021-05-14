@@ -37,6 +37,12 @@ if [ $(whoami) != "root" ];then
 fi
 # [[ $(id -u) != 0 ]] && echo -e "\n哎呀……请使用 ${red}root ${none}用户运行 ${yellow}~(^_^) ${none}\n" && exit
 
+# Detect bits
+is64bit=$(getconf LONG_BIT)
+if [ "${is64bit}" != '64' ];then
+	echo -e "\n哈哈……要用 ${red}64 ${none}位系统的呀 ${yellow}~(^_^) ${none}\n"
+fi
+
 # Detect running the script with "sh" instead of "bash"
 if readlink /proc/$$/exe | grep -q "sh"; then
 	echo -e "\n这个脚本需要使用 ${red}bash ${none}运行，而不是 ${yellow}sh ${none}\n"
