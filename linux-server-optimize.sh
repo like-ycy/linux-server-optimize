@@ -2,6 +2,11 @@
 #
 # https://github.com/like-ycy/linux-server-optimize
 
+# set env
+PATH=/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin:~/bin
+export PATH
+LANG=en_US.UTF-8
+
 # Colors
 red='\e[91m'
 green='\e[92m'
@@ -25,14 +30,18 @@ red(){
     echo -e "\033[31m\033[01m$1\033[0m"
 }
 
+# Detect Users
+if [ $(whoami) != "root" ];then
+	echo -e "\n哎呀……请使用 ${red}root ${none}用户运行 ${yellow}~(^_^) ${none}\n"
+	exit 1;
+fi
+# [[ $(id -u) != 0 ]] && echo -e "\n哎呀……请使用 ${red}root ${none}用户运行 ${yellow}~(^_^) ${none}\n" && exit
+
 # Detect running the script with "sh" instead of "bash"
 if readlink /proc/$$/exe | grep -q "sh"; then
 	echo -e "\n这个脚本需要使用 ${red}bash ${none}运行，而不是 ${yellow}sh ${none}\n"
 	exit
 fi
-
-# Detect Users
-[[ $(id -u) != 0 ]] && echo -e "\n哎呀……请使用 ${red}root ${none}用户运行 ${yellow}~(^_^) ${none}\n" && exit
 
 # Detect Kernel
 [[ $(uname -r | cut -d "." -f 1) -eq 2 ]] && echo -e "\n哎呀……当前系统内核版本过低，${red}请升级系统内核 ${none}\n" && exit
