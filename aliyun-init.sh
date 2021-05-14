@@ -22,10 +22,18 @@ format(){
           echo "  "
 }
 ##############################Set env###########################################
-export PATH=$PATH:/bin:/sbin/:/usr/sbin
+PATH=/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin:~/bin
+export PATH
+LANG=en_US.UTF-8
+
 if [[ "$(whoami)" != "root" ]]; then
-    echo "Please run this script as root." >&2
-    exit 
+    echo "Please run this script as root."
+    exit 1;
+fi
+
+is64bit=$(getconf LONG_BIT)
+if [ "${is64bit}" != '64' ];then
+	echo "抱歉, 此脚本不支持32位系统, 请使用64位系统!";
 fi
 
 ##############################Set Open File#####################################
