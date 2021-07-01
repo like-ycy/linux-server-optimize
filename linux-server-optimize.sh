@@ -1,5 +1,5 @@
 #!/bin/bash
-#
+
 # https://github.com/like-ycy/linux-server-optimize
 
 # set env
@@ -30,6 +30,17 @@ red(){
     echo -e "\033[31m\033[01m$1\033[0m"
 }
 
+read -t 10 -p "此脚本仅支持 Centos 7+ / Ubuntu 18+ 系统，请在使用前确定自己的版本 (当然脚本也会做检测) [Y/n] :" yn
+[ -z "${yn}" ] && yn="y"
+if [[ $yn == [Yy] ]]; then
+	""
+else
+	exit 1;
+fi
+
+# echo -e "\n ${red}此脚本仅支持 Centos 7+ / Ubuntu 18+ 系统，请在使用前确定自己的版本 (当然脚本也会做检测) ${none}\n"
+
+
 # Detect Users
 if [ $(whoami) != "root" ];then
 	echo -e "\n哎呀……请使用 ${red}root ${none}用户运行 ${yellow}~(^_^) ${none}\n"
@@ -44,9 +55,11 @@ if [ "${is64bit}" != '64' ];then
 fi
 
 # Detect running the script with "sh" instead of "bash"
-if readlink /proc/$$/exe | grep -q "sh"; then
+if readlink /proc/$$/exe | grep -q "bash"; then
+	""
+else
 	echo -e "\n这个脚本需要使用 ${red}bash ${none}运行，而不是 ${yellow}sh ${none}\n"
-	exit
+	exit 1;
 fi
 
 # Detect Kernel
@@ -65,17 +78,15 @@ elif [[ -e /etc/centos-release ]]; then
 	group_name="nobody"
 
 # This is annotation
-:<<!
-elif [[ -e /etc/debian_version ]]; then
- 	os="debian"
- 	os_version=$(grep -oE '[0-9]+' /etc/debian_version | head -1)
- 	group_name="nogroup"
+# elif [[ -e /etc/debian_version ]]; then
+#  	os="debian"
+#  	os_version=$(grep -oE '[0-9]+' /etc/debian_version | head -1)
+#  	group_name="nogroup"
 
-elif [[ -e /etc/fedora-release ]]; then
-	os="fedora"
-	os_version=$(grep -oE '[0-9]+' /etc/fedora-release | head -1)
-	group_name="nobody"
-!
+# elif [[ -e /etc/fedora-release ]]; then
+# 	os="fedora"
+# 	os_version=$(grep -oE '[0-9]+' /etc/fedora-release | head -1)
+# 	group_name="nobody"
 
 else
 	echo -e "
@@ -91,12 +102,10 @@ if [[ "$os" == "ubuntu" && "$os_version" -lt 1804 ]]; then
 fi
 
 # This is annotation
-:<<!
-if [[ "$os" == "debian" && "$os_version" -lt 9 ]]; then
-	echo -e "此脚本需要 ${green}Debian 9${none} 或更高版本。\n"
-	exit
-fi
-!
+# if [[ "$os" == "debian" && "$os_version" -lt 9 ]]; then
+# 	echo -e "此脚本需要 ${green}Debian 9${none} 或更高版本。\n"
+# 	exit
+# fi
 
 if [[ "$os" == "centos" && "$os_version" -lt 7 ]]; then
 	echo -e "此脚本需要 ${green}Centos 7${none} 或更高版本。\n"
@@ -146,7 +155,7 @@ StopSelinux(){
 
 # 设置打开文件最大数
 OpenFiles(){
-cp /etc/security/limits.conf /etc/security/limits.conf.`date +"%Y-%m-%d_%H-%M-%S"`
+cp /etc/security/limits.conf /etc/security/limits.conf.$(date +"%Y-%m-%d_%H-%M-%S")
 if [[ $? -ne 1 ]] ; then
 cat <<EOF >> /etc/security/limits.conf
 * soft nofile 65535
@@ -175,18 +184,23 @@ Repo(){
 		mv /etc/apt/sources.list /etc/apt/sources.list.bak
 	    wget -O /etc/apt/source.list https://github.com/like-ycy/linux-server-optimize/raw/main/sources1804.list
 		apt-get update
-	else
-		mv /etc/apt/sources.list /etc/apt/sources.list.bak
-		apt-get update
-
 	fi
+
+	if [[ "$os" == "ubuntu" && "$os_version" == 2004 ]]; then
+		mv /etc/apt/sources.list /etc/apt/sources.list.bak
+	    wget -O /etc/apt/source.list https://github.com/like-ycy/linux-server-optimize/raw/main/sources2004.list
+		apt-get update
+	fi
+
 	if [[ "$os" == "centos" && "$os_version" == 7 ]]; then
 		yum install wget -y
 		mv /etc/yum.repos.d/CentOS-Base.repo /etc/yum.repos.d/CentOS-Base.repo.bak
 		wget -O /etc/yum.repos.d/CentOS-Base.repo http://mirrors.aliyun.com/repo/Centos-7.repo
 		yum clean all
 		yum makecache
-	else
+	fi
+
+	if [[ "$os" == "centos" && "$os_version" == 8 ]]; then
 		dnf install wget -y
 		cd /etc/yum.repos.d/
 		for name in `ls *.repo`; do mv $name ${name%}.bak; done
@@ -214,12 +228,26 @@ InstallTools(){
 
 # 内核优化
 Kernel(){
-	cp /etc/sysctl.conf /etc/sysctl.conf.`date +"%Y-%m-%d_%H-%M-%S"`
+	cp /etc/sysctl.conf /etc/sysctl.conf.$(date +"%Y-%m-%d_%H-%M-%S")
 	wget -O /etc/sysctl.conf https://github.com/like-ycy/linux-server-optimize/raw/main/sysctl.conf
 	source /etc/sysctl.conf
 	green "===================================="
 	blue "===========  内核参数完毕  ==========="
 	green "===================================="
+}
+
+# 最后重启机器
+Reboot(){
+	red " ===================================="
+	blue "       都优化完了，要重启机器吗        "
+	red " ===================================="
+	echo
+	read -p "是否现在重启 ?请输入 [Y/n] :" yn
+	[ -z "${yn}" ] && yn="y"
+	if [[ $yn == [Yy] ]]; then
+		echo -e "即将重启..."
+		reboot
+	fi
 }
 
 start_menu(){
@@ -231,14 +259,14 @@ start_menu(){
     green " 1. 关闭防火墙和Selinux"
     green " 2. 修改打开文件最大数"
     green " 3. 修改时区"
-    green " 4. 修改镜像源"
+    green " 4. 修改镜像源(Ubuntu仅支持Ubuntu18.04、Ubuntu20.04长期支持版本)"
 	green " 5. 安装工具"
 	green " 6. 内核优化"
 	green " 7. 小孩子才做选择，我全都要!"
     blue " 0. 退出脚本"
     echo
     read -p "请输入数字:" num
-    case "$num" in
+	case "$num" in
     1)
     StopFirewalld
 	StopSelinux
@@ -266,6 +294,8 @@ start_menu(){
 	Repo
 	InstallTools
 	Kernel
+	Reboot
+	;;
     0)
     exit 1
     ;;
@@ -279,15 +309,3 @@ start_menu(){
 }
 
 start_menu
-
-# 最后重启机器
-red " ===================================="
-blue "       都优化完了，要重启机器吗        "
-red " ===================================="
-echo
-read -p "是否现在重启 ?请输入 [Y/n] :" yn
-[ -z "${yn}" ] && yn="y"
-if [[ $yn == [Yy] ]]; then
-	echo -e "即将重启..."
-	reboot
-fi
