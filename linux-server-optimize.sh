@@ -6,6 +6,7 @@
 PATH=/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin:~/bin
 export PATH
 LANG=en_US.UTF-8
+Base_path=$(dirname $(readlink -f $0))
 
 # Colors
 red='\e[91m'
@@ -182,13 +183,15 @@ TimeZone(){
 Repo(){
 	if [[ "$os" == "ubuntu" && "$os_version" == 1804 ]]; then
 		mv /etc/apt/sources.list /etc/apt/sources.list.bak
-	    wget -O /etc/apt/source.list https://github.com/like-ycy/linux-server-optimize/raw/main/sources1804.list
+	    # wget -O /etc/apt/source.list https://github.com/like-ycy/linux-server-optimize/raw/main/sources1804.list
+		cp $Base_path/sources1804.list /etc/apt/sources.list
 		apt-get update
 	fi
 
 	if [[ "$os" == "ubuntu" && "$os_version" == 2004 ]]; then
 		mv /etc/apt/sources.list /etc/apt/sources.list.bak
-	    wget -O /etc/apt/source.list https://github.com/like-ycy/linux-server-optimize/raw/main/sources2004.list
+	    # wget -O /etc/apt/source.list https://github.com/like-ycy/linux-server-optimize/raw/main/sources2004.list
+		cp $Base_path/sources2004.list /etc/apt/sources.list
 		apt-get update
 	fi
 
@@ -228,9 +231,18 @@ InstallTools(){
 
 # 内核优化
 Kernel(){
-	cp /etc/sysctl.conf /etc/sysctl.conf.$(date +"%Y-%m-%d_%H-%M-%S")
-	wget -O /etc/sysctl.conf https://github.com/like-ycy/linux-server-optimize/raw/main/sysctl.conf
-	sysctl -p
+	if [[ "$os" == "centos" ]]; then
+		cp /etc/sysctl.conf /etc/sysctl.conf.$(date +"%Y-%m-%d_%H-%M-%S")
+		# wget -O /etc/sysctl.conf https://github.com/like-ycy/linux-server-optimize/raw/main/centos-sysctl.conf
+		cp $Base_path/centos-sysctl.conf /etc/sysctl.conf
+		sysctl -p
+	else
+		cp /etc/sysctl.conf /etc/sysctl.conf.$(date +"%Y-%m-%d_%H-%M-%S")
+		# wget -O /etc/sysctl.conf https://github.com/like-ycy/linux-server-optimize/raw/main/ubuntu-sysctl.conf
+		cp $Base_path/ubuntu-sysctl.conf /etc/sysctl.conf
+		sysctl -p
+	fi
+
 	green "===================================="
 	blue "===========  内核参数完毕  ==========="
 	green "===================================="
