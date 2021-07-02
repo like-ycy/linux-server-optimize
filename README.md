@@ -22,7 +22,7 @@
 ## 使用方法
 ```bash
 # 1、克隆项目
-git clone git@github.com:like-ycy/linux-server-optimize.git
+git clone https://github.com/like-ycy/linux-server-optimize.git
 
 # 2、运行脚本
 cd linux-server-optimize
