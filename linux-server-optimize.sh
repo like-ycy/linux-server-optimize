@@ -230,7 +230,7 @@ InstallTools(){
 Kernel(){
 	cp /etc/sysctl.conf /etc/sysctl.conf.$(date +"%Y-%m-%d_%H-%M-%S")
 	wget -O /etc/sysctl.conf https://github.com/like-ycy/linux-server-optimize/raw/main/sysctl.conf
-	source /etc/sysctl.conf
+	sysctl -p
 	green "===================================="
 	blue "===========  内核参数完毕  ==========="
 	green "===================================="
